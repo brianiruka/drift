@@ -4,8 +4,6 @@
   <div id="app" class="container">
     <Particles
       id="tsparticles"
-      :particlesInit="particlesInit"
-      :particlesLoaded="particlesLoaded"
       :options="{
         background: {
           color: {
@@ -59,7 +57,7 @@
             direction: 'none',
             enable: true,
             outMode: 'out',
-            random: false,
+            random: true,
             speed: 0.5,
             straight: false,
           },
@@ -86,7 +84,7 @@
     />
     <div class="container">
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12 col-md-6" v-on:click="changeParticlesColor()">
           <div
             class="row inner-row"
             style="background: rgba(237, 237, 237, 0.04)"
@@ -97,75 +95,75 @@
               data-url="myurl"
               autocomplete="off"
             />
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4 col-md-3">
               <track-blocks></track-blocks>
             </div>
           </div>
         </div>
-        <div class="col-sm-6 d-flex">
+        <div class="col-sm-12 col-md-6 d-flex">
           <div
             class="container inner"
             style="background: rgba(237, 237, 237, 0.04)"
@@ -183,33 +181,53 @@
 <script>
 import TrackBlocks from "./components/track-blocks.vue";
 import * as Vibrant from "node-vibrant";
-
+import Spotify from "spotify-web-api-js";
+import SpotifyWebApi from "spotify-web-api-js";
 export default {
   name: "app",
   components: {
     TrackBlocks,
   },
+  mixins: [
+    authMixin,
+  ],
   data() {
     return {
       colorsArray: ["#fff"],
+      spot: new Spotify(),
+      spotAPI: new SpotifyWebApi(),
     };
   },
   mounted() {
-    window.vm = this;
-    let newColorArray = [];
-    Vibrant.from(
-      "https://thefader-res.cloudinary.com/private_images/w_760,c_limit,f_auto,q_auto:best/Screen_Shot_2018-04-06_at_1.26.00_PM_seync5/alina-barazs-color-of-you.jpg"
-    )
-      .maxColorCount(15)
-      .getPalette(function (err, palette) {
-        TouchList.colorsArray = [];
-        for (const property in palette) {
-          newColorArray.push(palette[property].hex);
-        }
-      });
-    // "https://upload.wikimedia.org/wikipedia/en/b/ba/Last_day_of_summer.png"
+    console.log(this.getAuthToken())
 
-    this.colorsArray = newColorArray;
+    this.spotAPI.getArtistAlbums(
+      "43ZHCT0cAZBISjO8DG9PnE",
+      function (err, data) {
+        if (err) console.error(err);
+        else console.log("Artist albums", data);
+      }
+    );
+  },
+  methods: {
+    changeParticlesColor() {
+      const self = this;
+      let newColorArray = [];
+      Vibrant.from(
+        "https://thefader-res.cloudinary.com/private_images/w_760,c_limit,f_auto,q_auto:best/Screen_Shot_2018-04-06_at_1.26.00_PM_seync5/alina-barazs-color-of-you.jpg"
+      )
+        .maxColorCount(15)
+        .getPalette(function (err, palette) {
+          for (const property in palette) {
+            newColorArray.push(palette[property].hex);
+          }
+          self.$children[0].container.options.particles.color.value =
+            newColorArray;
+          //  self.$children[0].container.updateActualOptions();
+
+          self.$children[0].container.refresh();
+        });
+    },
   },
 };
 </script>
@@ -255,5 +273,6 @@ canvas {
 
 .form-control {
   border-radius: 0;
+  background: none;
 }
 </style>
