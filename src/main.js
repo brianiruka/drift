@@ -9,7 +9,7 @@ import qs from 'qs'
 Vue.use(Particles)
 Vue.use( axios)
 
-var authMixin = {
+Vue.mixin({
   
   created: function () {
 
@@ -22,8 +22,7 @@ var authMixin = {
     };
   },
   methods: {
-    getAuthToken() {
-      let token = ""
+    async getAuthToken(callback) {
       var client_id = this.apiKeys.CLIENT_ID;
       var client_secret = this.apiKeys.CLIENT_SECRET;
       
@@ -43,17 +42,14 @@ var authMixin = {
 
       axios
       .post('https://accounts.spotify.com/api/token',qs.stringify(data),headers)
-      .then(response => (token = response.data.access_token))
-
-      return token
+      .then(response => (callback(response.data.access_token)))
   }
 
     },
     
-};
+});
 
 new Vue({
-  mixins:[authMixin],
   el: '#app',
   render: h => h(App)
 })

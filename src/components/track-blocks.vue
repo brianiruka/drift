@@ -2,7 +2,7 @@
   <div class="wrapper-1" ref="oBox">
     <div class="motion-demo" ref="box">
       <img
-        src="https://thefader-res.cloudinary.com/private_images/w_760,c_limit,f_auto,q_auto:best/Screen_Shot_2018-04-06_at_1.26.00_PM_seync5/alina-barazs-color-of-you.jpg"
+        :src="coverart"
         height="100px"
         width="100px"
       />
@@ -16,11 +16,15 @@ export default {
   data() {
     return {};
   },
+  props: {
+  coverart: String,
+  },
   mounted() {
     this.$refs.box.style.animationDelay = `${Math.floor(Math.random() * 100)}s`;
     this.$refs.oBox.style.animationDelay = `${Math.floor(
       Math.random() * 100
     )}s`;
+    console.log(this.coverart)
   },
 };
 </script>

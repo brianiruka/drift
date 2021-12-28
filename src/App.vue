@@ -84,7 +84,7 @@
     />
     <div class="container">
       <div class="row">
-        <div class="col-sm-12 col-md-6" v-on:click="changeParticlesColor()">
+        <div class="col-sm-12 col-md-6">
           <div
             class="row inner-row"
             style="background: rgba(237, 237, 237, 0.04)"
@@ -95,71 +95,8 @@
               data-url="myurl"
               autocomplete="off"
             />
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
-            </div>
-            <div class="col-sm-4 col-md-3">
-              <track-blocks></track-blocks>
+            <div v-for="(album, index) in albums" :key="album.images" class="col-sm-4 col-md-3" v-on:click="changeParticlesColor(index)">
+              <track-blocks :coverart="album.images[0].url" ></track-blocks>
             </div>
           </div>
         </div>
@@ -188,33 +125,38 @@ export default {
   components: {
     TrackBlocks,
   },
-  mixins: [
-    authMixin,
-  ],
   data() {
     return {
       colorsArray: ["#fff"],
       spot: new Spotify(),
       spotAPI: new SpotifyWebApi(),
+      authToken: '',
+      albums: {},
     };
   },
   mounted() {
-    console.log(this.getAuthToken())
+    this.getAuthToken(this.logToken)
 
-    this.spotAPI.getArtistAlbums(
-      "43ZHCT0cAZBISjO8DG9PnE",
-      function (err, data) {
-        if (err) console.error(err);
-        else console.log("Artist albums", data);
-      }
-    );
+
   },
   methods: {
-    changeParticlesColor() {
+    logToken(token){
+      this.authToken = token
+      this.spotAPI.setAccessToken(token);
+      const self = this;
+      this.spotAPI.getArtistAlbums(
+      "43ZHCT0cAZBISjO8DG9PnE",
+      function (err, data) {
+        self.albums = data.items;
+      }
+    );
+    },
+
+    changeParticlesColor(index) {
       const self = this;
       let newColorArray = [];
       Vibrant.from(
-        "https://thefader-res.cloudinary.com/private_images/w_760,c_limit,f_auto,q_auto:best/Screen_Shot_2018-04-06_at_1.26.00_PM_seync5/alina-barazs-color-of-you.jpg"
+        this.albums[index].images[0].url
       )
         .maxColorCount(15)
         .getPalette(function (err, palette) {
@@ -223,7 +165,6 @@ export default {
           }
           self.$children[0].container.options.particles.color.value =
             newColorArray;
-          //  self.$children[0].container.updateActualOptions();
 
           self.$children[0].container.refresh();
         });
